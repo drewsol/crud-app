@@ -1,88 +1,121 @@
-# crud-app
+# Solana Journal dApp
 
-This is a Next.js app containing:
+A full-stack decentralized journal application built on Solana. Users can create, update, and delete journal entries that are stored entirely on-chain using Program Derived Addresses (PDAs).
 
-- Tailwind CSS setup for styling
-- Useful wallet UI elements setup using [@solana/web3.js](https://www.npmjs.com/package/@solana/web3.js)
-- A basic Counter Solana program written in Anchor
-- UI components for interacting with the Counter program
+![Solana](https://img.shields.io/badge/Solana-9945FF?style=flat&logo=solana&logoColor=white)
+![Anchor](https://img.shields.io/badge/Anchor-0.31-blue)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-06B6D4?logo=tailwindcss&logoColor=white)
+
+## Features
+
+- **Create** journal entries with a title and message
+- **Update** existing entries with automatic account reallocation
+- **Delete** entries and recover rent
+- **Wallet integration** via Solana Wallet Adapter
+- **Cluster switching** between localhost, devnet, and mainnet
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Next.js Frontend                        │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
+│  │  Wallet Adapter │  │  React Query    │  │  Anchor     │  │
+│  │  (Connect)      │  │  (State Mgmt)   │  │  Client     │  │
+│  └────────┬────────┘  └────────┬────────┘  └──────┬──────┘  │
+└───────────┼────────────────────┼─────────────────┼──────────┘
+            │                    │                 │
+            └────────────────────┼─────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   Solana Blockchain                         │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │              Anchor Program (Rust)                   │   │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐    │   │
+│  │  │ create      │ │ update      │ │ delete      │    │   │
+│  │  │ _entry      │ │ _entry      │ │ _entry      │    │   │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘    │   │
+│  │                                                      │   │
+│  │  PDA: seeds = [title, owner_pubkey]                 │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Each journal entry is stored in a PDA derived from the entry title and owner's public key, ensuring unique entries per user.
+
+## Tech Stack
+
+| Layer      | Technology                          |
+|------------|-------------------------------------|
+| Frontend   | Next.js 16, React 19, Tailwind CSS  |
+| State      | TanStack React Query, Jotai         |
+| Blockchain | Solana, Anchor Framework 0.31       |
+| Wallet     | Solana Wallet Adapter               |
+| Language   | TypeScript, Rust                    |
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18+
+- Rust and Cargo
+- Solana CLI
+- Anchor CLI
+
 ### Installation
 
-#### Download the template
+```bash
+# Install dependencies
+npm install
 
-```shell
-pnpm create solana-dapp@latest -t gh:solana-foundation/templates/web3js/crud-app
+# Build the Anchor program
+npm run anchor-build
+
+# Start local validator with program deployed
+npm run anchor-localnet
 ```
 
-#### Install Dependencies
+### Development
 
-```shell
-pnpm install
+```bash
+# Start the frontend (in a new terminal)
+npm run dev
 ```
 
-## Apps
+Open [http://localhost:3000](http://localhost:3000) and connect your wallet to start creating journal entries.
 
-### anchor
+### Deploy to Devnet
 
-This is a Solana program written in Rust using the Anchor framework.
+```bash
+# Sync program keypair
+npm run anchor keys sync
 
-#### Commands
-
-You can use any normal anchor commands. Either move to the `anchor` directory and run the `anchor` command or prefix the
-command with `pnpm`, eg: `pnpm anchor`.
-
-#### Sync the program id:
-
-Running this command will create a new keypair in the `anchor/target/deploy` directory and save the address to the
-Anchor config file and update the `declare_id!` macro in the `./src/lib.rs` file of the program.
-
-You will manually need to update the constant in `anchor/lib/counter-exports.ts` to match the new program id.
-
-```shell
-pnpm anchor keys sync
+# Deploy
+npm run anchor deploy --provider.cluster devnet
 ```
 
-#### Build the program:
+## Project Structure
 
-```shell
-pnpm anchor-build
+```
+├── anchor/
+│   ├── programs/crud-app/src/
+│   │   └── lib.rs          # Solana program (CRUD instructions)
+│   ├── target/
+│   │   ├── idl/            # Generated IDL
+│   │   └── types/          # Generated TypeScript types
+│   └── tests/              # Anchor tests
+├── src/
+│   ├── app/                # Next.js app router pages
+│   └── components/
+│       ├── counter/        # Journal entry components
+│       ├── cluster/        # Network cluster switching
+│       ├── solana/         # Wallet provider setup
+│       └── ui/             # Reusable UI components
+└── package.json
 ```
 
-#### Start the test validator with the program deployed:
+## License
 
-```shell
-pnpm anchor-localnet
-```
-
-#### Run the tests
-
-```shell
-pnpm anchor-test
-```
-
-#### Deploy to Devnet
-
-```shell
-pnpm anchor deploy --provider.cluster devnet
-```
-
-### web
-
-This is a React app that uses the Anchor generated client to interact with the Solana program.
-
-#### Commands
-
-Start the web app
-
-```shell
-pnpm dev
-```
-
-Build the web app
-
-```shell
-pnpm build
-```
+MIT

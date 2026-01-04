@@ -54,6 +54,7 @@ export function useCounterProgram() {
     accounts,
     getProgramAccount,
     createEntry,
+    programId,
   }
 }
 
