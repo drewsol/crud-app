@@ -51,3 +51,4 @@ next-env.d.ts
 test-ledger
 **/*.rs.bk
 /anchor/target/flycheck0
+/anchor/target/**/*

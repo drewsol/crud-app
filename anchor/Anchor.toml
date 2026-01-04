@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-counter = "Count3AcZucFDPSFBAeHkQ6AvttieKUkyJ8HiQGhQwe"
+crud = "7qTvnwMLntQqZ3TEGGXzYZc4rm1XHAj5veB1EUtTpRbY"
 
 [registry]
 url = "https://api.apr.dev"
